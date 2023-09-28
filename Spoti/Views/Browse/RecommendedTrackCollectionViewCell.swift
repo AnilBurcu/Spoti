@@ -39,6 +39,7 @@ class RecommendedTrackCollectionViewCell: UICollectionViewCell {
             contentView.addSubview(trackNameLabel)
             contentView.addSubview(artistNameLabel)
             contentView.clipsToBounds = true
+            
         }
 
         required init?(coder: NSCoder) {
@@ -67,6 +68,7 @@ class RecommendedTrackCollectionViewCell: UICollectionViewCell {
             trackNameLabel.text = nil
             albumCoverImageView.image = nil
             artistNameLabel.text = nil
+            
         }
 
         func configure(with viewModel: RecommendedTrackCellViewModel) {

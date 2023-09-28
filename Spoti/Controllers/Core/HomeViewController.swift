@@ -59,47 +59,63 @@ class HomeViewController: UIViewController {
         configureCollectionView()
         view.addSubview(spinner)
         fetchData()
-//        addLongTapGesture()
+        addLongTapGesture()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
     }
-//
-//    private func addLongTapGesture() {
-//        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
-//        collectionView.isUserInteractionEnabled = true
-//        collectionView.addGestureRecognizer(gesture)
-//    }
+    
+    private func addLongTapGesture() {
+            let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
+            collectionView.isUserInteractionEnabled = true
+            collectionView.addGestureRecognizer(gesture)
+        }
+    
+    @objc func didLongPress(_ gesture: UILongPressGestureRecognizer) {
+            guard gesture.state == .began else {
+                return
+            }
 
-//    @objc func didLongPress(_ gesture: UILongPressGestureRecognizer) {
-//        guard gesture.state == .began else {
-//            return
-//        }
-//
-//        let touchPoint = gesture.location(in: collectionView)
-//        print("point: \(touchPoint)")
-//
-//        guard let indexPath = collectionView.indexPathForItem(at: touchPoint),
-//              indexPath.section == 2 else {
-//            return
-//        }
-//
-//        let model = tracks[indexPath.row]
-//
-//        let actionSheet = UIAlertController(
-//            title: model.name,
-//            message: "Would you like to add this to a playlist?",
-//            preferredStyle: .actionSheet
-//        )
-//
-//        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-//
-//
-//
-//        present(actionSheet, animated: true)
-//    }
+            let touchPoint = gesture.location(in: collectionView)
+            print("point: \(touchPoint)")
+
+            guard let indexPath = collectionView.indexPathForItem(at: touchPoint),
+                  indexPath.section == 2 else {
+                return
+            }
+
+            let model = tracks[indexPath.row]
+
+            let actionSheet = UIAlertController(
+                title: model.name,
+                message: "Would you like to add this to a playlist?",
+                preferredStyle: .actionSheet
+            )
+
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+            actionSheet.addAction(UIAlertAction(title: "Add to Playlist", style: .default, handler: { [weak self] _ in
+                DispatchQueue.main.async {
+                    let vc = LibraryPlaylistsViewController() // Kullanıcıya hangi listeye eklediğini sormak için hazırda var olan libraryvc ye yönlendirdik.
+                    vc.selectionHandler = { playlist in
+                        APICaller.shared.addTrackToPlaylist(
+                            track: model,
+                            playlist: playlist
+                        ) { success in
+                            print("Added to playlist success: \(success)")
+                        }
+                    }
+                    vc.title = "Select Playlist"
+                    self?.present(UINavigationController(rootViewController: vc),
+                                  animated: true, completion: nil)
+                }
+            }))
+
+            present(actionSheet, animated: true)
+        }
+
 
     private func configureCollectionView() {
         view.addSubview(collectionView)
@@ -111,6 +127,7 @@ class HomeViewController: UIViewController {
                                 forCellWithReuseIdentifier: FeaturedPlaylistCollectionViewCell.identifier)
         collectionView.register(RecommendedTrackCollectionViewCell.self,
                                 forCellWithReuseIdentifier: RecommendedTrackCollectionViewCell.identifier)
+        collectionView.register(TitleHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TitleHeaderCollectionReusableView.identifier)
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -294,6 +311,8 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return cell
         }
     }
+    
+
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
@@ -315,10 +334,29 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             navigationController?.pushViewController(vc, animated: true)
             
         case .recommendedTracks:
-            break
+            let track = tracks[indexPath.row]
+            PlaybackPresenter.shared.startPlayback(from: self, track: track)
+            
             
         }
+        
+        
     }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: TitleHeaderCollectionReusableView.identifier,
+                for: indexPath
+            ) as? TitleHeaderCollectionReusableView, kind == UICollectionView.elementKindSectionHeader else {
+                return UICollectionReusableView()
+            }
+            let section = indexPath.section
+            let title = sections[section].title
+            header.configure(with: title)
+            return header
+        }
+ 
     
     
 
