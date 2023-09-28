@@ -91,11 +91,11 @@ class AlbumViewController: UIViewController {
                 if success {
                     print("Saved")
                     
-//                    HapticsManager.shared.vibrate(for: .success)
+                    HapticsManager.shared.vibrate(for: .success)
                     NotificationCenter.default.post(name: .albumSavedNotification, object: nil)
                 }
                 else {
-//                    HapticsManager.shared.vibrate(for: .error)
+                    HapticsManager.shared.vibrate(for: .error)
                 }
             }
         }))
