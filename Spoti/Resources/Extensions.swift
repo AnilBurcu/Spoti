@@ -35,3 +35,7 @@ extension UIView {
             return top + height
         }
     }
+
+extension Notification.Name {
+    static let albumSavedNotification = Notification.Name("albumSavedNotification")
+}

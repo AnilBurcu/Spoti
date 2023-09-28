@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+
+struct SearchResultsSubtitleTableViewCellViewModel {
+    let title:String
+    let subtitle:String
+    let imageURL:URL?
+}
