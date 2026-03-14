@@ -2,6 +2,8 @@
 
 A native iOS client for Spotify built with Swift and UIKit, featuring OAuth authentication, music browsing, search, library management, and audio playback.
 
+**Architecture: MVC + Presenter Pattern | Programmatic UI | Protocol-Oriented Communication**
+
 <!-- Screenshots: Add 2-3 app screenshots here -->
 
 ## Features
@@ -26,10 +28,18 @@ A native iOS client for Spotify built with Swift and UIKit, featuring OAuth auth
 | Auth          | WKWebView-based OAuth 2.0                               |
 | Image Loading | SDWebImage                                              |
 | Layout        | UICollectionViewCompositionalLayout, frame-based layout |
+| Architecture  | MVC + Presenter + ViewModel                            |
 
-**Architecture**: MVC with dedicated ViewModels for cell configuration and a Presenter layer for playback state management.
+**Architecture: MVC with Presenter Pattern**
 
-This approach was chosen to keep the codebase straightforward while still separating concerns where it matters most -- view configuration logic lives in ViewModels, global playback state is managed by a dedicated Presenter, and all networking is centralized in a single API caller. The result is a clean dependency graph without the overhead of a full reactive architecture.
+The app follows MVC as its primary pattern, extended with two additional layers where plain MVC falls short:
+
+- **Presenter** -- `PlaybackPresenter` owns all audio playback logic (AVPlayer/AVQueuePlayer lifecycle, track queue, play state). This keeps view controllers free of media management code, making them lean and focused on UI. Controllers communicate with the presenter through `PlayerDataSource` and `PlayerViewControllerDelegate` protocols rather than direct coupling.
+- **ViewModel** -- Lightweight, non-reactive view models (`NewReleasesCellViewModel`, `FeaturedPlaylistCellViewModel`, etc.) handle the mapping from API models to display-ready data. Cells configure themselves from these view models, so controllers never deal with formatting or image URL resolution.
+- **Singleton Managers** -- `AuthManager` and `APICaller` centralize token lifecycle and network requests behind clean interfaces, preventing auth and networking logic from leaking into controllers.
+- **Delegate Pattern** -- All view-to-controller communication uses protocols (`PlaylistHeaderCollectionReusableViewDelegate`, `LibraryToggleViewDelegate`, `ActionLabelViewDelegate`), keeping views reusable and controllers interchangeable.
+
+This combination was chosen over a full MVVM+Coordinator stack to keep complexity proportional to the app's scope -- every added layer solves a concrete problem (playback state, cell configuration, auth) rather than existing for architectural purity.
 
 ## Technical Highlights
 
