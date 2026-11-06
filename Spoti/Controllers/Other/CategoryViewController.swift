@@ -2,7 +2,7 @@
 //  CategoryViewController.swift
 //  Spoti
 //
-//  Created by Anıl Bürcü on 20.09.2023.
+//  Created by AnilBurcu on 20.09.2023.
 //
 
 import UIKit

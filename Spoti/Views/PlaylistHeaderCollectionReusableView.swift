@@ -2,7 +2,7 @@
 //  PlaylistHeaderCollectionReusableView.swift
 //  Spoti
 //
-//  Created by Anıl Bürcü on 19.09.2023.
+//  Created by AnilBurcu on 19.09.2023.
 //
 
 import Foundation

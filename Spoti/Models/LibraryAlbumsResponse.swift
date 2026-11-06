@@ -2,7 +2,7 @@
 //  LibraryAlbumsRespons.swift
 //  Spoti
 //
-//  Created by Anıl Bürcü on 28.09.2023.
+//  Created by AnilBurcu on 28.09.2023.
 //
 
 import Foundation

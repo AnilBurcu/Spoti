@@ -2,7 +2,7 @@
 //  LibraryAlbumsViewController.swift
 //  Spoti
 //
-//  Created by Anıl Bürcü on 26.09.2023.
+//  Created by AnilBurcu on 26.09.2023.
 //
 
 import UIKit
